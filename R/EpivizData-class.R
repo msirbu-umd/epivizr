@@ -9,7 +9,8 @@ EpivizData <- setRefClass("EpivizData",
     columns="ANY",
     ylim="ANY",
     curQuery="ANY",
-    curHits="ANY"
+    curHits="ANY",
+    filterList="list"
   ),
   methods=list(
     initialize=function(object=GNCList(GRanges()), columns=NULL, ylim=NULL, ...) {
@@ -38,6 +39,7 @@ EpivizData <- setRefClass("EpivizData",
       curQuery <<- NULL
       curHits <<- NULL
       inDevice <<- FALSE
+      filterList <<- list()
       callSuper(...)
     },
     .getNAs=function() {
