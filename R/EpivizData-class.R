@@ -57,6 +57,15 @@ EpivizData <- setRefClass("EpivizData",
     .getLimits=function() {
       NULL
     },
+    #Do I need to sendRequest for these two functions? 
+    addRowFilter=function(function_filter, sendRequest=TRUE){
+      if(is.function(function_filter)){
+        filterList <<- c(filterList, function_filter)
+      }
+    },
+    clearRowFilters=function(function_filter, sendRequest=TRUE){
+      filterList <<- list()
+    },
     update=function(newObject, sendRequest=TRUE) {
 #      if(class(newObject) != class(object)) {
   #      stop("class of 'newObject' is not equal to class of current 'object'")
