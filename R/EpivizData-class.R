@@ -66,6 +66,20 @@ EpivizData <- setRefClass("EpivizData",
     clearRowFilters=function(function_filter, sendRequest=TRUE){
       filterList <<- list()
     },
+    #Same question as before, do I need sendRequest here? 
+    getData=function(){
+      updateObject <- object
+      #Is there a better way to do this then through a for-loop?
+      #Need to add check otherwise I go from 1:0!
+      num_filters <- length(filterList)
+      if(num_filters > 0){
+        for(i in 1:num_filters){
+          keepList <- filterList[[i]](updateObject)
+          updateObject <- updateObject[keepList,]
+        }
+      }
+      return(updateObject)
+    },
     update=function(newObject, sendRequest=TRUE) {
 #      if(class(newObject) != class(object)) {
   #      stop("class of 'newObject' is not equal to class of current 'object'")
