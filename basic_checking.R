@@ -13,6 +13,9 @@ mgr=startEpiviz(workspace="qyOTB6vVnff", gists="2caf8e891201130c7daa")
 
 blocks_measure <- mgr$addMeasurements(colon_blocks, "450k colon_blocks")
 
+#keep <- width(colon_blocks) > 250000
+#mgr$updateDevice(blocks_dev, colon_blocks[keep,])
+
 g <- function(x){
   keep <- width(x) > 250000
   return(keep)
