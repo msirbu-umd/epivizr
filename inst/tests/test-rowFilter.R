@@ -1,5 +1,6 @@
 context("row Filter")
-library(testthat)
+library(testthat) #Do I need to have this? Should this load before or after
+#other bioconductor classes? (Mention about overriding compare)
 
 #Why this is here? 
 #sendRequest=getOption("epivizrTestSendRequest")
