@@ -9,9 +9,13 @@ library("antiProfilesData")
 data(tcga_colon_example)
 data(apColonData)
 
-mgr=startEpiviz(workspace="qyOTB6vVnff", gists="2caf8e891201130c7daa")
+mgr=startEpiviz() #workspace="qyOTB6vVnff", gists="2caf8e891201130c7daa")
 
-blocks_measure <- mgr$addMeasurements(colon_blocks, "450k colon_blocks")
+
+gr <- GRanges(seqnames="chr1", ranges=IRanges(start=1:10, width=2:11))
+blocks_measure <- mgr$addMeasurements(gr, "gr_example")
+
+#blocks_measure <- mgr$addMeasurements(colon_blocks, "450k colon_blocks")
 
 blocks_dev <- mgr$addDevice(colon_blocks, "450k colon_blocks")
 keep <- width(colon_blocks) > 250000
