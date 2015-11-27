@@ -100,6 +100,52 @@ mgr$updateDevice(blocks_dev, colon_blocks[keep,])
 
 Now, only this subset of blocks will be displayed in the already existing track.
 
+### Filtering the data with filtering functions.
+
+This, however, not the only way to filter data. We have now added a new called
+filterList, which stores functions that filter based on block width. Here is
+a toy example using GRanges.
+
+```{r, eval=TRUE}
+gr <- GRanges(seqnames="chr1", ranges=IRanges(start=1:10, width=2:11))
+blocks_measure <- mgr$addMeasurements(gr, "gr_example")
+blocks_measure
+```
+
+To filter our data, we create a function and add it using the addRowFilter. we can get the filtered data using a call to the getData() method.  
+
+```{r, eval=TRUE}
+f1 <- function(x){
+  keep <- width(x) > 4
+  return(keep)
+}
+
+blocks_measure$addRowFilter(f1)
+blocks_measure$getData()
+```
+
+Although the data returned is filtered, the underlying data object is untouched. If we clear the filters using the clearRowFilters method, the original data is returned. 
+
+```{r, eval=TRUE}
+blocks_measure$clearRowFilters()
+blocks_measure$getData()
+```
+
+We can also add more filters: when more than one filter is present the result is a logical and between the filter results. 
+
+```{r, eval=TRUE}
+f2 <- function(x){
+  keep <- width(x) < 10
+  return(keep)
+}
+
+blocks_measure$addRowFilter(f1)
+blocks_measure$addRowFilter(f2)
+
+blocks_measure$getData()
+```
+
+
 ### Adding line plots along the genome
 
 We have a number of available data types in `epivizr`. In the previous section, we used the `block` type. For the methylation data at base-pair resolution in the `colon_curves` object, we will use the `bp` type.
