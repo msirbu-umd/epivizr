@@ -10,7 +10,8 @@ EpivizData <- setRefClass("EpivizData",
     ylim="ANY",
     curQuery="ANY",
     curHits="ANY",
-    filterList="list"
+    filterList="list",
+    rowSelect = "logical"
   ),
   methods=list(
     initialize=function(object=GNCList(GRanges()), columns=NULL, ylim=NULL, ...) {
@@ -40,6 +41,8 @@ EpivizData <- setRefClass("EpivizData",
       curHits <<- NULL
       inDevice <<- FALSE
       filterList <<- list()
+      #At initialization you want to return everything!
+      rowSelect <<- rep(TRUE, length(object))
       callSuper(...)
     },
     .getNAs=function() {
@@ -61,24 +64,32 @@ EpivizData <- setRefClass("EpivizData",
     addRowFilter=function(function_filter, sendRequest=TRUE){
       if(is.function(function_filter)){
         filterList <<- c(filterList, function_filter)
+        rowSelect <<- rowSelect & function_filter(object)
       }
     },
-    clearRowFilters=function(function_filter, sendRequest=TRUE){
+    clearRowFilters=function(sendRequest=TRUE){
       filterList <<- list()
+      rowSelect <<- rep(TRUE, length(object))
     },
     #Same question as before, do I need sendRequest here? 
     getData=function(){
-      updateObject <- object
+      
+      return(object[rowSelect, ])
+      
+      #updateObject <- object
+      
       #Is there a better way to do this then through a for-loop?
       #Need to add check otherwise I go from 1:0!
-      num_filters <- length(filterList)
-      if(num_filters > 0){
-        for(i in 1:num_filters){
-          keepList <- filterList[[i]](updateObject)
-          updateObject <- updateObject[keepList,]
-        }
-      }
-      return(updateObject)
+      
+      #num_filters <- length(filterList)
+      #if(num_filters > 0){
+      #  for(i in 1:num_filters){
+      #    keepList <- filterList[[i]](object)
+      #    updateObject <- object[keepList,]
+      #    rowSelect <<- keepList
+      #  }
+      #}
+      #return(updateObject)
     },
     update=function(newObject, sendRequest=TRUE) {
 #      if(class(newObject) != class(object)) {
@@ -98,6 +109,9 @@ EpivizData <- setRefClass("EpivizData",
         ylim <<- .getLimits()
       }
 
+      #clear the filters and update rowSelect based on the new object. 
+      filterList <<- list()
+      rowSelect <<- rep(TRUE, length(object))
       
       #if(is(object,"RangedSummarizedExperiment") && !is(rowRanges(object),"GIntervalTree")) {
        # rowRanges(object) <<- as(rowRanges(object), "GIntervalTree")
@@ -187,10 +201,22 @@ EpivizData$methods(
       stop("'query' must be of length 1")
     }
 
+    #print("query is:")
+    #print(query)
+    
     if (is.null(curQuery) || !identical(unname(query), unname(curQuery))) {
       curQuery <<- query
+      #print("curQuery is:")
+      #print(curQuery)
       olaps <- suppressWarnings(GenomicRanges::findOverlaps(query, object, select="all"))
+      #print("object is")
+      #print(object)
+      #print("olaps is")
+      #print(olaps)
       curHits <<- subjectHits(olaps)
+      #print("curl hits")
+      #print(curHits)
+      #print("-------------------------")
 
       if (length(curHits) == 0) {
         return(invisible())
