@@ -11,7 +11,8 @@ EpivizData <- setRefClass("EpivizData",
     curQuery="ANY",
     curHits="ANY",
     filterList="list",
-    rowSelect = "logical"
+    rowSelect = "logical",
+    rowSelectCumSum = "numeric"
   ),
   methods=list(
     initialize=function(object=GNCList(GRanges()), columns=NULL, ylim=NULL, ...) {
@@ -43,6 +44,8 @@ EpivizData <- setRefClass("EpivizData",
       filterList <<- list()
       #At initialization you want to return everything!
       rowSelect <<- rep(TRUE, length(object))
+      rowSelectCumSum <<- seq(1:length(object))
+      
       callSuper(...)
     },
     .getNAs=function() {
@@ -65,6 +68,8 @@ EpivizData <- setRefClass("EpivizData",
       if(is.function(function_filter)){
         filterList <<- c(filterList, function_filter)
         rowSelect <<- rowSelect & function_filter(object)
+        rowSelectCumSum <<- cumsum(rowSelect)
+        
         curQuery <<- NULL
         
         if (sendRequest && !mgr$isClosed())
@@ -75,6 +80,7 @@ EpivizData <- setRefClass("EpivizData",
       filterList <<- list()
       rowSelect <<- rep(TRUE, length(object))
       curQuery <<- NULL
+      rowSelectCumSum <<- seq(1:length(object))
       
       if (sendRequest && !mgr$isClosed())
         mgr$.clearDatasourceGroupCache(.self, sendRequest=sendRequest)
@@ -214,25 +220,8 @@ EpivizData$methods(
     
     if (is.null(curQuery) || !identical(unname(query), unname(curQuery))) {
       curQuery <<- query
-      #print("curQuery is:")
-      #print(curQuery)
       olaps <- suppressWarnings(GenomicRanges::findOverlaps(query, object, select="all"))
-      #print("object is")
-      #print(object)
-      #print("olaps is")
-      #print(olaps)
-      #print(rowSelect)
       curHits <<- subjectHits(olaps)
-      #print(curHits)
-      #trueRowIndices <- which(rowSelect == TRUE)  
-      #print(trueRowIndices)
-      #curTrueHits <- curHits %in% trueRowIndices
-      #print(curHits[curTrueHits])
-      #curHits <<- which(trueRowIndices %in% curHits[curTrueHits])
-      
-      #print("curl hits")
-      #print(curHits)
-      #print("-------------------------")
 
       if (length(curHits) == 0) {
         return(invisible())
@@ -264,21 +253,16 @@ EpivizData$methods(
                     metadata=.self$.getMetadata(curHits, metadata)))
     } else {
       
-      
-      trueRowIndices <- which(rowSelect == TRUE)
-      curHitsTrue <- curHits %in% trueRowIndices
-      #curlHits indices that are true relative to the unfiltered object
-      curHitsTrueRowIndices <- curHits[curHitsTrue]
-      #curlHits indices that are true relative to filteredObject
-      filteredCurHits <- which(trueRowIndices %in% curHitsTrueRowIndices)
+      curHitsTrueIndices <- curHits[rowSelect[curHits]]
+      filteredCurHits <- rowSelectCumSum[curHitsTrueIndices]
       
       if (!useOffset) {
         out <- list(globalStartIndex=filteredCurHits[1],
                   useOffset=FALSE,
                   values=list(
                     id=filteredCurHits,
-                    start=start(object)[curHitsTrueRowIndices],
-                    end=end(object)[curHitsTrueRowIndices],
+                    start=start(object)[curHitsTrueIndices],
+                    end=end(object)[curHitsTrueIndices],
                     #Which one should we use for metadata?
                     metadata=.self$.getMetadata(curHits, metadata)
                    ))
@@ -318,18 +302,14 @@ EpivizData$methods(
     
     getHits(query)
     
-    trueRowIndices <- which(rowSelect == TRUE)
-    curHitsTrue <- curHits %in% trueRowIndices
-    #curlHits indices that are true relative to the unfiltered object
-    curHitsTrueRowIndices <- curHits[curHitsTrue]
-    #curlHits indices that are true relative to filteredObject
-    filteredCurHits <- which(trueRowIndices %in% curHitsTrueRowIndices)
+    curHitsTrueIndices <- curHits[rowSelect[curHits]]
+    filteredCurHits <- rowSelectCumSum[curHitsTrueIndices]
     
     if (length(curHits) == 0) {
       out <- list(globalStartIndex=NULL, values=list())
     } else {
       out <- list(globalStartIndex=filteredCurHits[1],
-                  values=.self$.getValues(curHitsTrueRowIndices, measurement, round=round))
+                  values=.self$.getValues(curHitsTrueIndices, measurement, round=round))
       if (length(out$values) ==1) {
         out$values <- list(out$values)
       }
