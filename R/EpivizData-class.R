@@ -65,11 +65,19 @@ EpivizData <- setRefClass("EpivizData",
       if(is.function(function_filter)){
         filterList <<- c(filterList, function_filter)
         rowSelect <<- rowSelect & function_filter(object)
+        curQuery <<- NULL
+        
+        if (sendRequest && !mgr$isClosed())
+          mgr$.clearDatasourceGroupCache(.self, sendRequest=sendRequest)
       }
     },
     clearRowFilters=function(sendRequest=TRUE){
       filterList <<- list()
       rowSelect <<- rep(TRUE, length(object))
+      curQuery <<- NULL
+      
+      if (sendRequest && !mgr$isClosed())
+        mgr$.clearDatasourceGroupCache(.self, sendRequest=sendRequest)
     },
     #Same question as before, do I need sendRequest here? 
     getData=function(){
@@ -213,7 +221,15 @@ EpivizData$methods(
       #print(object)
       #print("olaps is")
       #print(olaps)
+      #print(rowSelect)
       curHits <<- subjectHits(olaps)
+      #print(curHits)
+      #trueRowIndices <- which(rowSelect == TRUE)  
+      #print(trueRowIndices)
+      #curTrueHits <- curHits %in% trueRowIndices
+      #print(curHits[curTrueHits])
+      #curHits <<- which(trueRowIndices %in% curHits[curTrueHits])
+      
       #print("curl hits")
       #print(curHits)
       #print("-------------------------")
@@ -247,25 +263,35 @@ EpivizData$methods(
                     end=list(),
                     metadata=.self$.getMetadata(curHits, metadata)))
     } else {
+      
+      
+      trueRowIndices <- which(rowSelect == TRUE)
+      curHitsTrue <- curHits %in% trueRowIndices
+      #curlHits indices that are true relative to the unfiltered object
+      curHitsTrueRowIndices <- curHits[curHitsTrue]
+      #curlHits indices that are true relative to filteredObject
+      filteredCurHits <- which(trueRowIndices %in% curHitsTrueRowIndices)
+      
       if (!useOffset) {
-        out <- list(globalStartIndex=curHits[1],
+        out <- list(globalStartIndex=filteredCurHits[1],
                   useOffset=FALSE,
                   values=list(
-                    id=curHits,
-                    start=start(object)[curHits],
-                    end=end(object)[curHits],
+                    id=filteredCurHits,
+                    start=start(object)[curHitsTrueRowIndices],
+                    end=end(object)[curHitsTrueRowIndices],
+                    #Which one should we use for metadata?
                     metadata=.self$.getMetadata(curHits, metadata)
                    ))
       } else {
-        st <- start(object)[curHits]
+        st <- start(object)[curHitsTrueRowIndices]
         stDiff <- diff(st)
-        end <- end(object)[curHits]
+        end <- end(object)[curHitsTrueRowIndices]
         endDiff <- diff(end)
         
-        out <- list(globalStartIndex=curHits[1],
+        out <- list(globalStartIndex=filteredCurHits[1],
                     useOffset=TRUE,
                     values=list(
-                      id=curHits,
+                      id=filteredCurHits,
                       start=c(st[1], stDiff),
                       end=c(end[1],endDiff),
                       metadata=.self$.getMetadata(curHits, metadata)
@@ -291,16 +317,35 @@ EpivizData$methods(
     }
     
     getHits(query)
+    
+    trueRowIndices <- which(rowSelect == TRUE)
+    curHitsTrue <- curHits %in% trueRowIndices
+    #curlHits indices that are true relative to the unfiltered object
+    curHitsTrueRowIndices <- curHits[curHitsTrue]
+    #curlHits indices that are true relative to filteredObject
+    filteredCurHits <- which(trueRowIndices %in% curHitsTrueRowIndices)
+    
     if (length(curHits) == 0) {
       out <- list(globalStartIndex=NULL, values=list())
     } else {
-      out <- list(globalStartIndex=curHits[1],
-                  values=.self$.getValues(curHits, measurement, round=round))
+      out <- list(globalStartIndex=filteredCurHits[1],
+                  values=.self$.getValues(curHitsTrueRowIndices, measurement, round=round))
       if (length(out$values) ==1) {
         out$values <- list(out$values)
       }
     }
     return(out)
+    
+#     if (length(curHits) == 0) {
+#       out <- list(globalStartIndex=NULL, values=list())
+#     } else {
+#       out <- list(globalStartIndex=curHits[1],
+#                   values=.self$.getValues(curHits, measurement, round=round))
+#       if (length(out$values) ==1) {
+#         out$values <- list(out$values)
+#       }
+#     }
+#     return(out)
   }
 )
 
