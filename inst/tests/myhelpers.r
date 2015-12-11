@@ -1,3 +1,5 @@
+#source("inst/tests/myhelpers.r")
+
 setEpivizrTestOpts <- function(sendRequest=TRUE,
                                daemonized=TRUE,
                                local=FALSE,
@@ -52,6 +54,8 @@ test_mes=function(req=TRUE,  dem=TRUE,stand=FALSE)
   setEpivizrTestOpts(sendRequest=req, daemonized=dem, standalone=stand); test(filter=".*Measure.*")
 }
 test_fet=function(req=TRUE) {setEpivizrTestOpts(sendRequest=req); test(filter=".*fetch.*")}
+test_rowFilter=function() {test(filter=".*rowFilter.*")}
+
 test_cha=function(req=TRUE,dem=TRUE,stand=FALSE)
 {
   setEpivizrTestOpts(sendRequest=req, daemonized=dem, standalone=stand); test(filter=".*Charts.*")
