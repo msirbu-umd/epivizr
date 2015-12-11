@@ -116,6 +116,7 @@ EpivizServer <- setRefClass("EpivizServer",
     makeCallbacks=function() {
       wsHandler <- function(ws) {
         if (verbose) epivizrMsg("WS opened")
+        #This is a 'WebSocket' object from package httpuv
         websocket <<- ws
         socketConnected <<- TRUE
         websocket$onMessage(.self$msgCallback)
