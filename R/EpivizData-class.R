@@ -10,6 +10,8 @@ EpivizData <- setRefClass("EpivizData",
     ylim="ANY",
     curQuery="ANY",
     curHits="ANY",
+    
+    #Add Object
     filterList="list",
     rowSelect = "logical",
     rowSelectCumSum = "numeric"
@@ -264,7 +266,7 @@ EpivizData$methods(
                     start=start(object)[curHitsTrueIndices],
                     end=end(object)[curHitsTrueIndices],
                     #Which one should we use for metadata?
-                    metadata=.self$.getMetadata(curHits, metadata)
+                    metadata=.self$.getMetadata(curHitsTrueIndices, metadata)
                    ))
       } else {
         st <- start(object)[curHitsTrueRowIndices]
@@ -278,7 +280,7 @@ EpivizData$methods(
                       id=filteredCurHits,
                       start=c(st[1], stDiff),
                       end=c(end[1],endDiff),
-                      metadata=.self$.getMetadata(curHits, metadata)
+                      metadata=.self$.getMetadata(curHitsTrueIndices, metadata)
                      ))
         }
     }
