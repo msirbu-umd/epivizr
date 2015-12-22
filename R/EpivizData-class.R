@@ -10,11 +10,12 @@ EpivizData <- setRefClass("EpivizData",
     ylim="ANY",
     curQuery="ANY",
     curHits="ANY",
-    
+      
     #Add Object
-    filterList="list",
-    rowSelect = "logical",
-    rowSelectCumSum = "numeric"
+    filterInfo="EpivizFilterInfo"
+    #filterList="list",
+    #rowSelect = "logical",
+    #rowSelectCumSum = "numeric"
   ),
   methods=list(
     initialize=function(object=GNCList(GRanges()), columns=NULL, ylim=NULL, ...) {
@@ -43,11 +44,14 @@ EpivizData <- setRefClass("EpivizData",
       curQuery <<- NULL
       curHits <<- NULL
       inDevice <<- FALSE
-      filterList <<- list()
-      #At initialization you want to return everything!
-      rowSelect <<- rep(TRUE, length(object))
-      rowSelectCumSum <<- seq(1:length(object))
       
+      
+      #At initialization you want to return everything
+      #filterList <<- list()
+      #rowSelect <<- rep(TRUE, length(object))
+      #rowSelectCumSum <<- seq(1:length(object))
+      filterInfo <<- EpivizFilterInfo$new(container=.self)
+        
       callSuper(...)
     },
     .getNAs=function() {
@@ -65,13 +69,11 @@ EpivizData <- setRefClass("EpivizData",
     .getLimits=function() {
       NULL
     },
-    #Do I need to sendRequest for these two functions? 
+    ###Do I need to sendRequest for these two functions? 
     addRowFilter=function(function_filter, sendRequest=TRUE){
       if(is.function(function_filter)){
-        filterList <<- c(filterList, function_filter)
-        rowSelect <<- rowSelect & function_filter(object)
-        rowSelectCumSum <<- cumsum(rowSelect)
         
+        filterInfo$addRowFilter(function_filter)
         curQuery <<- NULL
         
         if (sendRequest && !mgr$isClosed())
@@ -79,33 +81,18 @@ EpivizData <- setRefClass("EpivizData",
       }
     },
     clearRowFilters=function(sendRequest=TRUE){
-      filterList <<- list()
-      rowSelect <<- rep(TRUE, length(object))
+      
+      filterInfo$clearRowFilters()
       curQuery <<- NULL
-      rowSelectCumSum <<- seq(1:length(object))
       
       if (sendRequest && !mgr$isClosed())
         mgr$.clearDatasourceGroupCache(.self, sendRequest=sendRequest)
     },
-    #Same question as before, do I need sendRequest here? 
+    ###Same question as before, do I need sendRequest here? 
     getData=function(){
       
-      return(object[rowSelect, ])
+      return(filterInfo$getData())
       
-      #updateObject <- object
-      
-      #Is there a better way to do this then through a for-loop?
-      #Need to add check otherwise I go from 1:0!
-      
-      #num_filters <- length(filterList)
-      #if(num_filters > 0){
-      #  for(i in 1:num_filters){
-      #    keepList <- filterList[[i]](object)
-      #    updateObject <- object[keepList,]
-      #    rowSelect <<- keepList
-      #  }
-      #}
-      #return(updateObject)
     },
     update=function(newObject, sendRequest=TRUE) {
 #      if(class(newObject) != class(object)) {
@@ -125,9 +112,11 @@ EpivizData <- setRefClass("EpivizData",
         ylim <<- .getLimits()
       }
 
-      #clear the filters and update rowSelect based on the new object. 
-      filterList <<- list()
-      rowSelect <<- rep(TRUE, length(object))
+      #Should this be .self version or filterInfo version? (The difference
+      #being that the latter does not set curQuery to NULL. The original
+      #update made no mention of that.)
+      ###
+      .self$clearRowFilters()
       
       #if(is(object,"RangedSummarizedExperiment") && !is(rowRanges(object),"GIntervalTree")) {
        # rowRanges(object) <<- as(rowRanges(object), "GIntervalTree")
@@ -255,8 +244,8 @@ EpivizData$methods(
                     metadata=.self$.getMetadata(curHits, metadata)))
     } else {
       
-      curHitsTrueIndices <- curHits[rowSelect[curHits]]
-      filteredCurHits <- rowSelectCumSum[curHitsTrueIndices]
+      curHitsTrueIndices <- filterInfo$getTrueCurHits(curHits)
+      filteredCurHits <- filterInfo$getFilteredCurHits(curHitsTrueIndices)
       
       if (!useOffset) {
         out <- list(globalStartIndex=filteredCurHits[1],
@@ -265,7 +254,7 @@ EpivizData$methods(
                     id=filteredCurHits,
                     start=start(object)[curHitsTrueIndices],
                     end=end(object)[curHitsTrueIndices],
-                    #Which one should we use for metadata?
+                    ###Which one should we use for metadata?
                     metadata=.self$.getMetadata(curHitsTrueIndices, metadata)
                    ))
       } else {
@@ -304,8 +293,10 @@ EpivizData$methods(
     
     getHits(query)
     
-    curHitsTrueIndices <- curHits[rowSelect[curHits]]
-    filteredCurHits <- rowSelectCumSum[curHitsTrueIndices]
+    curHitsTrueIndices <- filterInfo$getTrueCurHits(curHits)
+    #print(curHitsTrueIndices)
+    filteredCurHits <- filterInfo$getFilteredCurHits(curHitsTrueIndices)
+    #print(filteredCurHits)
     
     if (length(curHits) == 0) {
       out <- list(globalStartIndex=NULL, values=list())
