@@ -22,7 +22,8 @@ exportClasses(EpivizDeviceMgr,
               EpivizWigCache,
               EpivizWigData,
               EpivizGeneInfoData,
-              EpivizChart)
+              EpivizChart,
+              EpivizFilterInfo)
 
 export(startEpiviz)
 export(startStandalone)

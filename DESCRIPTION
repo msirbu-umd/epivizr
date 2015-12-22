@@ -19,11 +19,13 @@ Depends: R (>= 3.0.1), methods, Biobase, SummarizedExperiment (>= 0.2.0), rtrack
 Imports: S4Vectors, httpuv (>= 1.3.0), rjson, OrganismDbi, R6 (>= 2.0.0), mime (>= 0.2), GenomeInfoDb, GenomicRanges, GenomicFeatures
 Suggests: testthat, roxygen2, knitr, antiProfilesData, hgu133plus2.db, knitrBootstrap, Mus.musculus
 Collate: 'utils.r' 'middleware-plus-supporting.R' 'EpivizServer-class.R' 'EpivizDeviceMgr-class.R'
-        'startEpiviz.R' 'startStandalone.R' 'EpivizData-class.R' 'EpivizTrackData-class.R'
+        'startEpiviz.R' 'startStandalone.R' 'EpivizFilterInfo-class.R' 
+         'EpivizData-class.R' 'EpivizTrackData-class.R'
         'EpivizFeatureData-class.R' 'EpivizBlockData-class.R'
         'EpivizBpData-class.R' 'EpivizGeneInfoData-class.R' 'makeGeneTrackAnnotation.R' 
         'EpivizDataCache-class.R' 'EpivizWigCache-class.R'
 	      'EpivizWigData-class.R' 'register-methods.R'
-        'EpivizChart-class.R' 'EpivizDevice-class.R' 'zzz.R'
+        'EpivizChart-class.R'  
+        'EpivizDevice-class.R' 'zzz.R'
 biocViews: Visualization, Infrastructure, GUI
 Video: https://www.youtube.com/watch?v=099c4wUxozA
