@@ -30,17 +30,17 @@ test_that("default initialization is correct", {
   expect_equal(length(blocks_measure$object), 10)
   
   #No filters just yet!
-  expect_equal(length(blocks_measure$filterList), 0)
-  expect_equal(length(blocks_measure$rowSelect[blocks_measure$rowSelect == TRUE]), 
-               length(gr))
-  expect_equal(blocks_measure$rowSelectCumSum, seq(1,10))
+  expect_equal(length(blocks_measure$filterInfo$filterList), 0)
+  expect_equal(length(
+    blocks_measure$filterInfo$rowSelect[blocks_measure$filterInfo$rowSelect == TRUE]), length(gr))
+  expect_equal(blocks_measure$filterInfo$rowSelectCumSum, seq(1,10))
   
   #Clearing filter should not fail and still be 0
   blocks_measure$clearRowFilters()
-  expect_equal(length(blocks_measure$filterList), 0)
-  expect_equal(length(blocks_measure$rowSelect[blocks_measure$rowSelect == TRUE]), 
+  expect_equal(length(blocks_measure$filterInfo$filterList), 0)
+  expect_equal(length(blocks_measure$filterInfo$rowSelect[blocks_measure$filterInfo$rowSelect == TRUE]), 
                length(gr))
-  expect_equal(blocks_measure$rowSelectCumSum, seq(1,10))
+  expect_equal(blocks_measure$filterInfo$rowSelectCumSum, seq(1,10))
 
 })
 
@@ -57,19 +57,19 @@ test_that("adding filters works", {
     
   #Adding a filter!
   blocks_measure$addRowFilter(f1)
-  expect_equal(length(blocks_measure$filterList), 1)
-  expect_equal(blocks_measure$filterList[[1]], f1)
-  expect_equal(length(blocks_measure$rowSelect[blocks_measure$rowSelect == TRUE]), 
+  expect_equal(length(blocks_measure$filterInfo$filterList), 1)
+  expect_equal(blocks_measure$filterInfo$filterList[[1]], f1)
+  expect_equal(length(blocks_measure$filterInfo$rowSelect[blocks_measure$filterInfo$rowSelect == TRUE]), 
                length(gr[width(gr) > 2.5]))
-  expect_equal(blocks_measure$rowSelect, width(gr) > 2.5)
-  expect_equal(blocks_measure$rowSelectCumSum, seq(0,9))
+  expect_equal(blocks_measure$filterInfo$rowSelect, width(gr) > 2.5)
+  expect_equal(blocks_measure$filterInfo$rowSelectCumSum, seq(0,9))
   
   #Try to add a non-function to filterList
   #NOTE: the checking is not sophisticated enough to verify the function 
   #is appropriate (it just checks that) it is a function.
 
   blocks_measure$addRowFilter(5)
-  expect_equal(length(blocks_measure$filterList), 1)
+  expect_equal(length(blocks_measure$filterInfo$filterList), 1)
     
   f2 <- function(x){
     keep <- width(x) < 8
@@ -78,12 +78,12 @@ test_that("adding filters works", {
     
   #Adding a second filter!
   blocks_measure$addRowFilter(f2)
-  expect_equal(length(blocks_measure$filterList), 2)
-  expect_equal(blocks_measure$filterList[[2]], f2)
-  expect_equal(length(blocks_measure$rowSelect[blocks_measure$rowSelect == TRUE]), 
+  expect_equal(length(blocks_measure$filterInfo$filterList), 2)
+  expect_equal(blocks_measure$filterInfo$filterList[[2]], f2)
+  expect_equal(length(blocks_measure$filterInfo$rowSelect[blocks_measure$filterInfo$rowSelect == TRUE]), 
                length(gr[width(gr) > 2.5 & width(gr) < 8]))
-  expect_equal(blocks_measure$rowSelect, (width(gr) > 2.5 & width(gr) < 8))
-  expect_equal(blocks_measure$rowSelectCumSum, c(0, 1, 2, 3, 4, 5, 5, 5, 5, 5))
+  expect_equal(blocks_measure$filterInfo$rowSelect, (width(gr) > 2.5 & width(gr) < 8))
+  expect_equal(blocks_measure$filterInfo$rowSelectCumSum, c(0, 1, 2, 3, 4, 5, 5, 5, 5, 5))
   
   #Adding a third filter (to make sure that it's logical or!)
   f3 <- function(x){
@@ -92,19 +92,19 @@ test_that("adding filters works", {
   }
     
   blocks_measure$addRowFilter(f3)
-  expect_equal(length(blocks_measure$filterList), 3)
-  expect_equal(blocks_measure$filterList[[3]], f3)
-  expect_equal(length(blocks_measure$rowSelect[blocks_measure$rowSelect == TRUE]), 
+  expect_equal(length(blocks_measure$filterInfo$filterList), 3)
+  expect_equal(blocks_measure$filterInfo$filterList[[3]], f3)
+  expect_equal(length(blocks_measure$filterInfo$rowSelect[blocks_measure$filterInfo$rowSelect == TRUE]), 
                length(gr[width(gr) > 2.5 & width(gr) < 8 & width(gr) %% 2 == 0]))
-  expect_equal(blocks_measure$rowSelect, (width(gr) > 2.5 & width(gr) < 8 & 
+  expect_equal(blocks_measure$filterInfo$rowSelect, (width(gr) > 2.5 & width(gr) < 8 & 
                                             width(gr) %% 2 == 0))
 
-  expect_equal(blocks_measure$rowSelectCumSum, c(0, 0, 1,1, 2, 2, 2, 2, 2, 2))
+  expect_equal(blocks_measure$filterInfo$rowSelectCumSum, c(0, 0, 1,1, 2, 2, 2, 2, 2, 2))
   
   #Now let's clear the filters!
   blocks_measure$clearRowFilters()
-  expect_equal(length(blocks_measure$filterList), 0)
-  expect_equal(blocks_measure$rowSelectCumSum, seq(1,10))  
+  expect_equal(length(blocks_measure$filterInfo$filterList), 0)
+  expect_equal(blocks_measure$filterInfo$rowSelectCumSum, seq(1,10))  
 })
 
 test_that("getData works", {
@@ -130,6 +130,7 @@ test_that("getData works", {
   expect_equal(as(blocks_measure$object, "GRanges"), unname(gr))
     
 })
+
 
 #This test should return the indices that satisfy (a) the filters and
 #(b) the queries with respect to the indices present in the filter object
@@ -210,7 +211,7 @@ test_that("getValues works properly", {
   
   query <- GRanges(seqnames="chr1", ranges=IRanges(start=7, end=8))
   
-  msObj1 <- epivizr::register(gr1, type="bp")
+  msObj1 <- epivizr::register(gr, type="bp")
   
   f1 <- function(x){
     keep <- width(x) > 3
@@ -229,3 +230,6 @@ test_that("getValues works properly", {
   expect_equal(res,out)
   
 })
+
+gr3 <- GRanges(seqnames="chr1", ranges=IRanges(start=1:5, width=c(1,2,1,2,2)),
+        seqinfo=Seqinfo(seqnames="chr1",genome="hcb"))
