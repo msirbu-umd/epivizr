@@ -35,10 +35,11 @@ EpivizDeviceMgr <- setRefClass("EpivizDeviceMgr",
        getMeasurements=function(mgr, msgData, ...) { mgr$getMeasurements() },
        getRows=function(mgr, msgData, ...) { mgr$getRows(msgData$seqName, msgData$start, msgData$end, msgData$metadata, msgData$datasource) },
        getValues=function(mgr, msgData, ...) { mgr$getValues(msgData$seqName, msgData$start, msgData$end, msgData$datasource, msgData$measurement) },
-       getSeqInfos=function(mgr, msgData, ...) { mgr$getSeqInfos() }
+       getSeqInfos=function(mgr, msgData, ...) { mgr$getSeqInfos() },
+       updateWidth=function(mgr, msgData){mgr$updateWidth(msgData$chartId)}
      )
-
-     chartTypeMap <<- list()
+     
+    chartTypeMap <<- list()
 
      callSuper(...)
    },
@@ -387,6 +388,29 @@ EpivizDeviceMgr$methods(list(
   }
 ))
 
+#Filter managment methods
+EpivizDeviceMgr$methods(list(
+  updateWidth=function(chartId){
+    x <- chartId
+    f1 <- function(x){
+      keep <- width(x) > 250000
+        return(keep)
+    }
+    
+    print("I'm in the width method!")
+    deviceList$epivizDevice_1$getMsObject()$addRowFilter(f1)
+    
+    print("Filter added!")
+  },
+  tryingToBeFunny=function(){
+    f1 <- function(x){
+      keep <- width(x) > 250000
+      return(keep)
+    }
+    
+    deviceList$epivizDevice_1$getMsObject()$addRowFilter(f1)
+  }
+))
 # chart management methods
 EpivizDeviceMgr$methods(list(
    addChart=function(chartObject, sendRequest=!nonInteractive, ...) {
@@ -832,9 +856,25 @@ EpivizDeviceMgr$methods(
  # action handler
 EpivizDeviceMgr$methods(list(
     handle=function(action, msgData) {
-      callback = actionMap[[action]]
-      out = callback(.self, msgData)
-      return(out)
+      print(action)
+      print(msgData)
+      flush.console()
+      
+      if(action == "updateWidth"){
+        #browser()
+        print("I'm inside this action")
+        .self$updateWidth(msgData$chartId)
+      }else{
+        callback = actionMap[[action]]
+        out = callback(.self, msgData)
+        return(out)
+      }
+      
+#       callback = actionMap[[action]]
+#       out = callback(.self, msgData)
+#       print("What is out?")
+#       print(out)
+#       return(out)
     }
 ))
 
