@@ -2,16 +2,46 @@
 data(tcga_colon_example)
 data(apColonData)
 
+sendRequest = getOption("epivizrTestSendRequest")
 
-mgr=startEpiviz(workspace="qyOTB6vVnff", gists="2caf8e891201130c7daa")
-blocks_dev <- mgr$addDevice(colon_blocks, "450K colon_blocks")
-
-
+mgr <- .startMGR()
 
 
 
 
 
+#mgr=startEpiviz(workspace="qyOTB6vVnff", gists="2caf8e891201130c7daa")
+blocks_dev <- mgr$addDevice(colon_blocks, "4505K colon_blocks")
+
+
+
+mgr <- startEpiviz(localURL= "http://localhost/index.php", openBrowser=TRUE, verbose=TRUE) #, port=7332L)
+
+mgr <- startEpiviz(localURL= "http://localhost/index.php", openBrowser=TRUE, port=7334L)
+
+blocks_dev <- mgr$addDevice(colon_blocks, "450k colon_blocks")
+mgr$service()
+
+g <- function(x){
+  keep <- width(x) > 250000
+  return(keep)
+}
+
+x <- mgr$deviceList$epivizDevice_1$getMsObject()
+
+x$addRowFilter(g)
+
+mgr$deviceList$epivizDevice_1$getMsObject()$addRowFilter(g)    mgr$deviceList$epivizDevice_1$getMsObject()$clearRowFilters()   
+mgr$rmAllDevices()
+  
+blocks_dev2 <- mgr$addDevice(colon_blocks, "450k colon_blocks")
+
+mgr$stopServer()
+
+mgr <- .startMGR(openBrowser=sendRequest)
+mgr$stopServer()
+
+blocks_dev <- mgr$addDevice(colon_blocks, "450k colon_blocks")
 
 
 
