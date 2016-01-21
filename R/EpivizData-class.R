@@ -76,8 +76,9 @@ EpivizData <- setRefClass("EpivizData",
         filterInfo$addRowFilter(function_filter)
         curQuery <<- NULL
         
-        if (sendRequest && !mgr$isClosed())
-          mgr$.clearDatasourceGroupCache(.self, sendRequest=sendRequest)
+        return(id)
+        #if (sendRequest && !mgr$isClosed())
+        #  mgr$.clearDatasourceGroupCache(.self, sendRequest=sendRequest)
       }
     },
     clearRowFilters=function(sendRequest=TRUE){
@@ -85,8 +86,9 @@ EpivizData <- setRefClass("EpivizData",
       filterInfo$clearRowFilters()
       curQuery <<- NULL
       
-      if (sendRequest && !mgr$isClosed())
-        mgr$.clearDatasourceGroupCache(.self, sendRequest=sendRequest)
+      return(id)
+      #if (sendRequest && !mgr$isClosed())
+      #  mgr$.clearDatasourceGroupCache(.self, sendRequest=sendRequest)
     },
     ###Same question as before, do I need sendRequest here? 
     getData=function(){

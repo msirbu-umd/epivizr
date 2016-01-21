@@ -398,9 +398,8 @@ EpivizDeviceMgr$methods(list(
     }
     
     print("I'm in the width method!")
-    deviceList$epivizDevice_1$getMsObject()$addRowFilter(f1)
-    
-    print("Filter added!")
+    id <- deviceList$epivizDevice_1$getMsObject()$addRowFilter(f1)
+    return(id)
   },
   tryingToBeFunny=function(){
     f1 <- function(x){
@@ -856,19 +855,32 @@ EpivizDeviceMgr$methods(
  # action handler
 EpivizDeviceMgr$methods(list(
     handle=function(action, msgData) {
+      
       print(action)
       print(msgData)
-      flush.console()
       
+      callback = actionMap[[action]]
+      out = callback(.self, msgData)
       if(action == "updateWidth"){
-        #browser()
-        print("I'm inside this action")
-        .self$updateWidth(msgData$chartId)
-      }else{
-        callback = actionMap[[action]]
-        out = callback(.self, msgData)
-        return(out)
+        print("What is out?")
+        print(out)
       }
+      return(out)
+      
+      
+#       print(action)
+#       print(msgData)
+#       flush.console()
+#       
+#       if(action == "updateWidth"){
+#         #browser()
+#         print("I'm inside this action")
+#         .self$updateWidth(msgData$chartId)
+#       }else{
+#         callback = actionMap[[action]]
+#         out = callback(.self, msgData)
+#         return(out)
+#       }
       
 #       callback = actionMap[[action]]
 #       out = callback(.self, msgData)
