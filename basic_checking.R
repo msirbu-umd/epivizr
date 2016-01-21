@@ -15,9 +15,11 @@ blocks_dev <- mgr$addDevice(colon_blocks, "4505K colon_blocks")
 
 
 
-mgr <- startEpiviz(localURL= "http://localhost/index.php", openBrowser=TRUE, verbose=TRUE) #, port=7332L)
+#mgr <- startEpiviz(localURL= "http://localhost/index.php", openBrowser=TRUE, verbose=TRUE) #, port=7332L)
 
-mgr <- startEpiviz(localURL= "http://localhost/index.php", openBrowser=TRUE, port=7334L)
+
+mgr <- startEpiviz(localURL= "http://localhost/index.php", openBrowser=TRUE)    #, verbose=TRUE)
+mgr <- startEpiviz(localURL= "http://localhost/index.php", openBrowser=TRUE, port=7336L)
 
 blocks_dev <- mgr$addDevice(colon_blocks, "450k colon_blocks")
 mgr$service()
@@ -28,6 +30,8 @@ g <- function(x){
 }
 
 x <- mgr$deviceList$epivizDevice_1$getMsObject()
+keep <- width(colon_blocks) > 250000
+mgr$updateDevice(blocks_dev, colon_blocks[keep,])
 
 x$addRowFilter(g)
 
