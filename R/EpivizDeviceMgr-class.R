@@ -36,7 +36,7 @@ EpivizDeviceMgr <- setRefClass("EpivizDeviceMgr",
        getRows=function(mgr, msgData, ...) { mgr$getRows(msgData$seqName, msgData$start, msgData$end, msgData$metadata, msgData$datasource) },
        getValues=function(mgr, msgData, ...) { mgr$getValues(msgData$seqName, msgData$start, msgData$end, msgData$datasource, msgData$measurement) },
        getSeqInfos=function(mgr, msgData, ...) { mgr$getSeqInfos() },
-       updateWidth=function(mgr, msgData){mgr$updateWidth(msgData$chartId)}
+       updateWidth=function(mgr, msgData){mgr$updateWidth(msgData$chartId, msgData$datasource)}
      )
      
     chartTypeMap <<- list()
@@ -390,7 +390,13 @@ EpivizDeviceMgr$methods(list(
 
 #Filter managment methods
 EpivizDeviceMgr$methods(list(
-  updateWidth=function(chartId){
+  updateWidth=function(chartId, datasource){
+    print(chartId)
+    print(datasource)
+    
+    obj <- .findDatasource(datasource)
+    print(obj)
+    
     x <- chartId
     f1 <- function(x){
       keep <- width(x) > 250000
@@ -858,12 +864,14 @@ EpivizDeviceMgr$methods(list(
       
       print(action)
       print(msgData)
+      flush.console()
       
       callback = actionMap[[action]]
       out = callback(.self, msgData)
       if(action == "updateWidth"){
         print("What is out?")
         print(out)
+        flush.console()
       }
       return(out)
       
