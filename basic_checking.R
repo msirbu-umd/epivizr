@@ -16,10 +16,22 @@ blocks_dev <- mgr$addDevice(colon_blocks, "4505K colon_blocks")
 
 
 #mgr <- startEpiviz(localURL= "http://localhost/index.php", openBrowser=TRUE, verbose=TRUE) #, port=7332L)
+library(devtools)
+
+install_github("epiviz/httpuv")
+install_github("epiviz/epivizr@win32_daemon")
 
 
-mgr <- startEpiviz(localURL= "http://localhost/index.php", openBrowser=TRUE)    #, verbose=TRUE)
+mgr <- startEpiviz(localURL= "http://localhost/index.php", openBrowser=TRUE, daemonize=TRUE)    #, verbose=TRUE)
 mgr <- startEpiviz(localURL= "http://localhost/index.php", openBrowser=TRUE, port=7336L)
+
+library(epivizr)
+data(tcga_colon_example)
+
+mgr <- startEpiviz(daemonize=TRUE, localURL= "http://localhost/index.php")
+
+dev <- mgr$addDevice(colon_blocks, "test")
+
 
 blocks_dev <- mgr$addDevice(colon_blocks, "450k colon_blocks")
 mgr$service()
