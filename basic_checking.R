@@ -6,7 +6,7 @@ data(apColonData)
 mgr=startEpiviz(workspace="qyOTB6vVnff", gists="2caf8e891201130c7daa")
 blocks_dev <- mgr$addDevice(colon_blocks, "450K colon_blocks")
 
-
+mgr <- startEpiviz(localURL="http://localhost/index.php", openBrowser=TRUE, daemonize=TRUE)
 
 
 
