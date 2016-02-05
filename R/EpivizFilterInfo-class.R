@@ -1,17 +1,18 @@
 EpivizFilterInfo <- setRefClass("EpivizFilterInfo",
     fields = list(
-      container="ANY",
+      length="numeric",
       filterList="list",
-      rowSelect = "logical",
-      rowSelectCumSum = "numeric"
+      #Any suggestions to solving this issue?
+      rowSelect = "ANY",
+      rowSelectCumSum = "ANY"
      
     ),
     methods=list(
-      initialize=function(container = NULL, ...){
-        container <<- container
+      initialize=function(length = 0, ...){
+        length <<- length
         filterList <<- list()
-        rowSelect <<-  rep(TRUE, length(container$object))
-        rowSelectCumSum <<- seq(1:length(container$object))
+        rowSelect <- NULL
+        rowSelectCumSum <<- NULL
       },
       addRowFilter=function(function_filter){
         

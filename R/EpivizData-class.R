@@ -50,7 +50,7 @@ EpivizData <- setRefClass("EpivizData",
       #filterList <<- list()
       #rowSelect <<- rep(TRUE, length(object))
       #rowSelectCumSum <<- seq(1:length(object))
-      filterInfo <<- EpivizFilterInfo$new(container=.self)
+      filterInfo <<- EpivizFilterInfo$new(length(object))
         
       callSuper(...)
     },
