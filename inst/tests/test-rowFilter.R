@@ -31,16 +31,14 @@ test_that("default initialization is correct", {
   
   #No filters just yet!
   expect_equal(length(blocks_measure$filterInfo$filterList), 0)
-  expect_equal(length(
-    blocks_measure$filterInfo$rowSelect[blocks_measure$filterInfo$rowSelect == TRUE]), length(gr))
-  expect_equal(blocks_measure$filterInfo$rowSelectCumSum, seq(1,10))
+  expect_equal(is.null(blocks_measure$filterInfo$rowSelect), TRUE)
+  expect_equal(is.null(blocks_measure$filterInfo$rowSelectCumSum), TRUE)
   
   #Clearing filter should not fail and still be 0
   blocks_measure$clearRowFilters()
   expect_equal(length(blocks_measure$filterInfo$filterList), 0)
-  expect_equal(length(blocks_measure$filterInfo$rowSelect[blocks_measure$filterInfo$rowSelect == TRUE]), 
-               length(gr))
-  expect_equal(blocks_measure$filterInfo$rowSelectCumSum, seq(1,10))
+  expect_equal(is.null(blocks_measure$filterInfo$rowSelect), TRUE)
+  expect_equal(is.null(blocks_measure$filterInfo$rowSelectCumSum), TRUE)
 
 })
 
@@ -54,9 +52,10 @@ test_that("adding filters works", {
     keep <- width(x) > 2.5
     return(keep)
   }
-    
+  
   #Adding a filter!
   blocks_measure$addRowFilter(f1)
+  
   expect_equal(length(blocks_measure$filterInfo$filterList), 1)
   expect_equal(blocks_measure$filterInfo$filterList[[1]], f1)
   expect_equal(length(blocks_measure$filterInfo$rowSelect[blocks_measure$filterInfo$rowSelect == TRUE]), 
@@ -104,7 +103,8 @@ test_that("adding filters works", {
   #Now let's clear the filters!
   blocks_measure$clearRowFilters()
   expect_equal(length(blocks_measure$filterInfo$filterList), 0)
-  expect_equal(blocks_measure$filterInfo$rowSelectCumSum, seq(1,10))  
+  expect_equal(is.null(blocks_measure$filterInfo$rowSelect), TRUE)
+  expect_equal(is.null(blocks_measure$filterInfo$rowSelectCumSum), TRUE)
 })
 
 test_that("getData works", {

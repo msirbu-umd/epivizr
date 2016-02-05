@@ -73,7 +73,7 @@ EpivizData <- setRefClass("EpivizData",
     addRowFilter=function(function_filter, sendRequest=TRUE){
       if(is.function(function_filter)){
         
-        filterInfo$addRowFilter(function_filter)
+        filterInfo$addRowFilter(object, function_filter)
         curQuery <<- NULL
         
         if (sendRequest && !mgr$isClosed())

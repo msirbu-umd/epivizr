@@ -15,7 +15,7 @@ EpivizFilterInfo <- setRefClass("EpivizFilterInfo",
         rowSelectCumSum <<- NULL 
       },
       addRowFilter=function(object, function_filter){
-        filterList <- c(filterList, function_filter)
+        filterList <<- c(filterList, function_filter)
         
         if(is.null(rowSelect)){
           rowSelect <<- function_filter(object)
