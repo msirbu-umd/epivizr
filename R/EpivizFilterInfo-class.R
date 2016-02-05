@@ -11,8 +11,8 @@ EpivizFilterInfo <- setRefClass("EpivizFilterInfo",
       initialize=function(length = 0, ...){
         length <<- length
         filterList <<- list()
-        rowSelect <- NULL
-        rowSelectCumSum <<- NULL
+        rowSelect <<-  NULL 
+        rowSelectCumSum <<- NULL 
       },
       addRowFilter=function(function_filter){
         
@@ -28,14 +28,26 @@ EpivizFilterInfo <- setRefClass("EpivizFilterInfo",
         rowSelectCumSum <<- seq(1:length(container$object))
         
       },
-      getData=function(){
-        return(container$object[rowSelect, ])
+      getData=function(object){
+        if(is.null(rowSelect)){
+          object
+        }else{
+          object[rowSelect, ]
+        }
       },
       getTrueCurHits=function(curHits){
-        return(curHits[rowSelect[curHits]])
+        if(is.null(rowSelect)){
+          curHits
+        }else{
+          curHits[rowSelect[curHits]]
+        }
       },
       getFilteredCurHits=function(curHitsTrueIndices){
-        return(rowSelectCumSum[curHitsTrueIndices])
+        if(is.null(rowSelectCumSum)){
+          curHitsTrueIndices
+        }else{
+          rowSelectCumSum[curHitsTrueIndices]
+        }
       }
     )
 )
