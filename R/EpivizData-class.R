@@ -90,9 +90,7 @@ EpivizData <- setRefClass("EpivizData",
     },
     ###Same question as before, do I need sendRequest here? 
     getData=function(){
-      
       return(filterInfo$getData(object))
-      
     },
     update=function(newObject, sendRequest=TRUE) {
 #      if(class(newObject) != class(object)) {
