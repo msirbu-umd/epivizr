@@ -36,7 +36,7 @@ EpivizDeviceMgr <- setRefClass("EpivizDeviceMgr",
        getRows=function(mgr, msgData, ...) { mgr$getRows(msgData$seqName, msgData$start, msgData$end, msgData$metadata, msgData$datasource) },
        getValues=function(mgr, msgData, ...) { mgr$getValues(msgData$seqName, msgData$start, msgData$end, msgData$datasource, msgData$measurement) },
        getSeqInfos=function(mgr, msgData, ...) { mgr$getSeqInfos() },
-       updateWidth=function(mgr, msgData){mgr$updateWidth(msgData$chartId, msgData$datasource)}
+       updateWidth=function(mgr, msgData){mgr$updateWidth(msgData$chartId, msgData$datasource, msgData$threshold)}
      )
      
     chartTypeMap <<- list()
@@ -390,7 +390,7 @@ EpivizDeviceMgr$methods(list(
 
 #Filter managment methods
 EpivizDeviceMgr$methods(list(
-  updateWidth=function(chartId, datasource){
+  updateWidth=function(chartId, datasource, threshold){
     #print(chartId)
     #print(datasource)
     
@@ -399,7 +399,7 @@ EpivizDeviceMgr$methods(list(
     
     x <- chartId
     f1 <- function(x){
-      keep <- width(x) > 250000
+      keep <- width(x) > threshold
         return(keep)
     }
     
@@ -865,8 +865,8 @@ EpivizDeviceMgr$methods(list(
     handle=function(action, msgData) {
       
       #print(action)
-      #print(msgData)
-      #flush.console()
+      print(msgData)
+      flush.console()
       
       callback = actionMap[[action]]
       out = callback(.self, msgData)
