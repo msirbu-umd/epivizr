@@ -50,7 +50,7 @@ EpivizData <- setRefClass("EpivizData",
       #filterList <<- list()
       #rowSelect <<- rep(TRUE, length(object))
       #rowSelectCumSum <<- seq(1:length(object))
-      filterInfo <<- EpivizFilterInfo$new(container=.self)
+      filterInfo <<- EpivizFilterInfo$new(length(object))
         
       callSuper(...)
     },
@@ -73,7 +73,7 @@ EpivizData <- setRefClass("EpivizData",
     addRowFilter=function(function_filter, sendRequest=TRUE){
       if(is.function(function_filter)){
         
-        filterInfo$addRowFilter(function_filter)
+        filterInfo$addRowFilter(object, function_filter)
         curQuery <<- NULL
         
         return(id)
@@ -92,9 +92,7 @@ EpivizData <- setRefClass("EpivizData",
     },
     ###Same question as before, do I need sendRequest here? 
     getData=function(){
-      
-      return(filterInfo$getData())
-      
+      return(filterInfo$getData(object))
     },
     update=function(newObject, sendRequest=TRUE) {
 #      if(class(newObject) != class(object)) {

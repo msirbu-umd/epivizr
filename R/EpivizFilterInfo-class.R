@@ -1,40 +1,58 @@
 EpivizFilterInfo <- setRefClass("EpivizFilterInfo",
     fields = list(
-      container="ANY",
+      length="numeric",
       filterList="list",
-      rowSelect = "logical",
-      rowSelectCumSum = "numeric"
+      #Any suggestions to solving this issue?
+      rowSelect = "ANY",
+      rowSelectCumSum = "ANY"
      
     ),
     methods=list(
-      initialize=function(container = NULL, ...){
-        container <<- container
+      initialize=function(length = 0, ...){
+        length <<- length
         filterList <<- list()
-        rowSelect <<-  rep(TRUE, length(container$object))
-        rowSelectCumSum <<- seq(1:length(container$object))
+        rowSelect <<-  NULL 
+        rowSelectCumSum <<- NULL 
       },
-      addRowFilter=function(function_filter){
-        
+      addRowFilter=function(object, function_filter){
         filterList <<- c(filterList, function_filter)
-        rowSelect <<- rowSelect & function_filter(container$object)
+        
+        if(is.null(rowSelect)){
+          rowSelect <<- function_filter(object)
+        }else{
+          rowSelect <<- rowSelect & function_filter(object)
+        }
+        
         rowSelectCumSum <<- cumsum(rowSelect)
-          
+        
       },
-      clearRowFilters=function(sendRequest=TRUE){
+      clearRowFilters=function(object, sendRequest=TRUE){
         
         filterList <<- list()
-        rowSelect <<- rep(TRUE, length(container$object))
-        rowSelectCumSum <<- seq(1:length(container$object))
+        rowSelect <<- NULL #rep(TRUE, length(container$object))
+        rowSelectCumSum <<- NULL #seq(1:length(container$object))
         
       },
-      getData=function(){
-        return(container$object[rowSelect, ])
+      getData=function(object){
+        if(is.null(rowSelect)){
+          object
+        }else{
+          object[rowSelect, ]
+        }
       },
       getTrueCurHits=function(curHits){
-        return(curHits[rowSelect[curHits]])
+        if(is.null(rowSelect)){
+          curHits
+        }else{
+          curHits[rowSelect[curHits]]
+        }
       },
       getFilteredCurHits=function(curHitsTrueIndices){
-        return(rowSelectCumSum[curHitsTrueIndices])
+        if(is.null(rowSelectCumSum)){
+          curHitsTrueIndices
+        }else{
+          rowSelectCumSum[curHitsTrueIndices]
+        }
       }
     )
 )

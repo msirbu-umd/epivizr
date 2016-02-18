@@ -33,6 +33,7 @@ mgr <- startEpiviz(daemonize=TRUE, localURL= "http://localhost/index.php")
 dev <- mgr$addDevice(colon_blocks, "test")
 
 
+
 blocks_dev <- mgr$addDevice(colon_blocks, "450k colon_blocks")
 mgr$service()
 
