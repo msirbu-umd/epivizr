@@ -90,6 +90,16 @@ EpivizData <- setRefClass("EpivizData",
       #if (sendRequest && !mgr$isClosed())
       #  mgr$.clearDatasourceGroupCache(.self, sendRequest=sendRequest)
     },
+    updateWidth=function(function_filter, sendRequest=TRUE){
+      if(is.function(function_filter)){
+      
+        filterInfo$clearRowFilters()
+        filterInfo$addRowFilter(object, function_filter)
+        curQuery <<- NULL
+        
+        return(id)
+      }
+    },
     ###Same question as before, do I need sendRequest here? 
     getData=function(){
       return(filterInfo$getData(object))

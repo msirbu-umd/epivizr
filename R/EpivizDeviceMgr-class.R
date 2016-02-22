@@ -406,7 +406,7 @@ EpivizDeviceMgr$methods(list(
     #print("I'm in the width method!")
     
     #id <- deviceList$epivizDevice_1$getMsObject()$addRowFilter(f1)
-    id <- obj$addRowFilter(f1)
+    id <- obj$updateWidth(f1)
     return(id)
   },
   tryingToBeFunny=function(){

@@ -7,7 +7,7 @@ sendRequest = getOption("epivizrTestSendRequest")
 mgr <- .startMGR()
 
 
-
+g <- mgr$addMeasurements(colon_blocks, "blocks"); mgr$blockChart(g$getMeasurements())`
 
 
 #mgr=startEpiviz(workspace="qyOTB6vVnff", gists="2caf8e891201130c7daa")
@@ -30,9 +30,14 @@ data(tcga_colon_example)
 
 mgr <- startEpiviz(daemonize=TRUE, localURL= "http://localhost/index.php")
 
-dev <- mgr$addDevice(colon_blocks, "test")
+blocks_dev <- mgr$addDevice(colon_blocks, "test")
 
 
+mgr$addChart(colon_blocks)
+
+blocks_measure <- epivizr::register(colon_blocks)
+
+mgr$addChart(blocks_measure)
 
 blocks_dev <- mgr$addDevice(colon_blocks, "450k colon_blocks")
 mgr$service()
