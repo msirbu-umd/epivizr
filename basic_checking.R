@@ -7,7 +7,24 @@ sendRequest = getOption("epivizrTestSendRequest")
 mgr <- .startMGR()
 
 
-g <- mgr$addMeasurements(colon_blocks, "blocks"); mgr$blockChart(g$getMeasurements())`
+
+mgr <- startEpiviz(localURL= "http://localhost/index.php", openBrowser=TRUE, daemonize=TRUE, port = 7312L)
+g <- mgr$addMeasurements(colon_blocks, "blocks")
+g2 <- mgr$addMeasurements(colon_blocks, "blocks2")
+mgr$service()
+
+
+mgr$blockChart(g$getMeasurements())
+
+g2 <- mgr$addMeasurements(colon_blocks, "blocks")
+
+
+mgr$blockChart(g$getMeasurements())
+mgr$stopServer()
+
+
+g2 <- mgr$addMeasurements(colon_blocks, "blocks2") 
+mgr$blockChart(g2$getMeasurements())
 
 
 #mgr=startEpiviz(workspace="qyOTB6vVnff", gists="2caf8e891201130c7daa")
