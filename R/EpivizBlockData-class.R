@@ -34,7 +34,8 @@ EpivizBlockData$methods(
                 annotation=NULL,
                 minValue=NA,
                 maxValue=NA,
-                metadata=NULL))
+                metadata=NULL,
+                epivizrBound=TRUE))
       out
   },
   parseMeasurement=function(msId) {
