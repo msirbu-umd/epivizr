@@ -13,11 +13,16 @@ g <- mgr$addMeasurements(colon_blocks, "blocks")
 g2 <- mgr$addMeasurements(colon_blocks, "blocks2")
 mgr$service()
 
+#This works to put two things in. 
+mgr$blockChart(list(g$getMeasurements()[[1]], g2$getMeasurements()[[1]]))
 
-mgr$blockChart(g$getMeasurements())
+mgr$blockChart(list(g$getMeasurements()[[1]], g2$getMeasurements()[[1]]))
+
+mgr$blockChart(g2$getMeasurements())
 
 g2 <- mgr$addMeasurements(colon_blocks, "blocks")
 
+blocks_dev <- mgr$addDevice(colon_blocks, "450k colon_blocks")
 
 mgr$blockChart(g$getMeasurements())
 mgr$stopServer()
@@ -70,7 +75,8 @@ mgr$updateDevice(blocks_dev, colon_blocks[keep,])
 
 x$addRowFilter(g)
 
-mgr$deviceList$epivizDevice_1$getMsObject()$addRowFilter(g)    mgr$deviceList$epivizDevice_1$getMsObject()$clearRowFilters()   
+mgr$deviceList$epivizDevice_1$getMsObject()$addRowFilter(g)    
+mgr$deviceList$epivizDevice_1$getMsObject()$clearRowFilters()   
 mgr$rmAllDevices()
   
 blocks_dev2 <- mgr$addDevice(colon_blocks, "450k colon_blocks")
