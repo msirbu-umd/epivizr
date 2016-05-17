@@ -299,7 +299,8 @@ EpivizDeviceMgr$methods(list(
                  annotation=list(),
                  minValue=numeric(),
                  maxValue=numeric(),
-                 metadata=list()
+                 metadata=list(),
+                 canFilter=TRUE
                  )
      for (i in seq_along(typeMap)) {
        curType <- names(typeMap)[i]
@@ -848,10 +849,6 @@ EpivizDeviceMgr$methods(
  # action handler
 EpivizDeviceMgr$methods(list(
     handle=function(action, msgData) {
-      
-      #print(action)
-      #print(msgData)
-      #flush.console()
       
       callback = actionMap[[action]]
       out = callback(.self, msgData)

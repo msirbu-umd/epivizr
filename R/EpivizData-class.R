@@ -236,6 +236,9 @@ EpivizData$methods(
     invisible()
   },
   getRows=function(query, metadata, useOffset=FALSE) {
+    
+    print("YOU'RE STILL CALING GET ROWS!")
+    flush.console()
     if (is.null(query)) {
       out <- list(globalStartIndex=NULL, useOffset=FALSE,
                   values=list(id=list(),
